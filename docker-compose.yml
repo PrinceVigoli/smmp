@@ -6,6 +6,7 @@ services:
     env_file:
       - .env.local
     environment:
+      # Override DATABASE_URL to use the persistent volume path
       - DATABASE_URL=file:./data/prod.db
       - NEXTAUTH_URL=http://localhost:3000
     volumes:

@@ -215,10 +215,12 @@ docker run -d \
 
 SMMP works on [Vercel](https://vercel.com) but requires switching from SQLite to a hosted database (e.g., PostgreSQL via Vercel Postgres or Neon) since Vercel's serverless functions don't support persistent file storage.
 
-1. Push the repo to GitHub
-2. Import the project on [vercel.com/new](https://vercel.com/new)
-3. Add your environment variables in the Vercel dashboard
-4. Deploy
+1. Update `prisma/schema.prisma` — change the datasource provider from `"sqlite"` to `"postgresql"`
+2. Update `DATABASE_URL` in your environment to a PostgreSQL connection string
+3. Push the repo to GitHub
+4. Import the project on [vercel.com/new](https://vercel.com/new)
+5. Add your environment variables in the Vercel dashboard
+6. Deploy
 
 ### Option 3: VPS / Bare Metal
 

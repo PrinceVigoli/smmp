@@ -19,7 +19,6 @@ RUN npm run build
 
 # Stage 3: Production runner
 FROM base AS runner
-RUN apk add --no-cache python3 make g++
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
