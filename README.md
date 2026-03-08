@@ -169,6 +169,104 @@ smmp/
 
 ---
 
+## 🚢 Deployment
+
+### Option 1: Docker (Recommended)
+
+The easiest way to deploy SMMP is with Docker.
+
+#### Quick Start
+
+```bash
+# 1. Copy and configure environment variables
+cp .env.example .env.local
+# Edit .env.local with your production values
+
+# 2. Build and start the container
+docker compose up -d --build
+
+# 3. Push the database schema
+docker compose exec smmp npx prisma db push
+
+# 4. Seed the admin user
+docker compose exec smmp npx prisma db seed
+```
+
+The app will be available at `http://localhost:3000`.
+
+#### Docker only (without Compose)
+
+```bash
+docker build -t smmp .
+
+docker run -d \
+  -p 3000:3000 \
+  -e DATABASE_URL="file:./data/prod.db" \
+  -e NEXTAUTH_URL="https://yourdomain.com" \
+  -e NEXTAUTH_SECRET="generate-a-strong-secret" \
+  -e SMM_API_KEY="your-smm-api-key" \
+  -e SMM_API_URL="https://izzysmm.shop/api/v2" \
+  -v smmp-data:/app/data \
+  --name smmp \
+  smmp
+```
+
+### Option 2: Vercel
+
+SMMP works on [Vercel](https://vercel.com) but requires switching from SQLite to a hosted database (e.g., PostgreSQL via Vercel Postgres or Neon) since Vercel's serverless functions don't support persistent file storage.
+
+1. Push the repo to GitHub
+2. Import the project on [vercel.com/new](https://vercel.com/new)
+3. Add your environment variables in the Vercel dashboard
+4. Deploy
+
+### Option 3: VPS / Bare Metal
+
+```bash
+# 1. Install Node.js 20+
+# 2. Clone and install
+git clone <repo-url>
+cd smmp
+npm ci
+
+# 3. Configure environment
+cp .env.example .env.local
+# Edit .env.local with production values — set NEXTAUTH_URL to your domain
+
+# 4. Build
+npm run build
+
+# 5. Set up database
+npm run db:push
+npm run db:seed
+
+# 6. Start the production server
+npm run start
+```
+
+Use a process manager like [PM2](https://pm2.keymetrics.io/) to keep the app running:
+
+```bash
+npm install -g pm2
+pm2 start npm --name smmp -- start
+pm2 save
+pm2 startup
+```
+
+Put a reverse proxy like [Nginx](https://nginx.org/) or [Caddy](https://caddyserver.com/) in front for HTTPS.
+
+### Production Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | SQLite path (e.g., `file:./data/prod.db`) |
+| `NEXTAUTH_URL` | Your public URL (e.g., `https://yourdomain.com`) |
+| `NEXTAUTH_SECRET` | A strong random secret — generate with `openssl rand -base64 32` |
+| `SMM_API_KEY` | Your SMM API key |
+| `SMM_API_URL` | SMM API endpoint |
+
+---
+
 ## 🔒 Security
 
 - All SMM API calls are server-side only (API key never exposed to client)

@@ -1,0 +1,16 @@
+services:
+  smmp:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - DATABASE_URL=file:./data/prod.db
+      - NEXTAUTH_URL=http://localhost:3000
+    volumes:
+      - smmp-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  smmp-data:
