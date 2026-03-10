@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 -- --------------------------------------------------------
 INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('site_name', 'Iyapayao Booster'),
-('api_key', ''),
+('api_key', '43195d8a787d14b7d281a2a94a92a66a'),
 ('api_url', 'https://bigsmmserver.com/api/v2'),
 ('currency', 'USD'),
 ('price_markup_percent', '20')

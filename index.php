@@ -1,9 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Landing page — redirect to login or dashboard.
- */
 $config = __DIR__ . '/config/database.php';
 if (!file_exists($config)) {
     header('Location: install/install.php');

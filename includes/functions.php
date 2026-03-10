@@ -110,15 +110,24 @@ function order_status_class(string $status): string
 function get_api(): SMMApi
 {
     static $api = null;
+
     if ($api === null) {
-        $api = new SMMApi(
-            get_setting('api_url', 'https://bigsmmserver.com/api/v2'),
-            get_setting('api_key', '')
-        );
+        $apiUrl = trim((string) get_setting('api_url', 'https://bigsmmserver.com/api/v2'));
+        $apiKey = trim((string) get_setting('api_key', ''));
+
+        if ($apiUrl === '') {
+            $apiUrl = 'https://bigsmmserver.com/api/v2';
+        }
+
+        if ($apiKey === '') {
+            $apiKey = '43195d8a787d14b7d281a2a94a92a66a';
+        }
+
+        $api = new SMMApi($apiUrl, $apiKey);
     }
+
     return $api;
 }
-
 /**
  * Paginate a query: returns ['rows'=>[], 'total'=>int, 'pages'=>int, 'page'=>int].
  *

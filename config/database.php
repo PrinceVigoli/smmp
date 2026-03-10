@@ -2,11 +2,11 @@
 declare(strict_types=1);
 
 // Database configuration — override these values in a local .env or set environment variables
-define('DB_HOST',     getenv('DB_HOST')     ?: 'localhost');
+define('DB_HOST',     getenv('DB_HOST')     ?: '127.0.0.1');
 define('DB_PORT',     getenv('DB_PORT')     ?: '3306');
 define('DB_NAME',     getenv('DB_NAME')     ?: 'iyapayao_booster');
-define('DB_USER',     getenv('DB_USER')     ?: 'root');
-define('DB_PASS',     getenv('DB_PASS')     ?: '');
+define('DB_USER',     getenv('DB_USER')     ?: 'iyapayao');
+define('DB_PASS',     getenv('DB_PASS')     ?: 'strongpassword123');
 define('DB_CHARSET',  'utf8mb4');
 
 // Application constants

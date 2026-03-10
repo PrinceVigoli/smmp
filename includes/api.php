@@ -15,17 +15,11 @@ class SMMApi
         $this->api_key = $api_key;
     }
 
-    // ----------------------------------------------------------------
-    // Public methods
-    // ----------------------------------------------------------------
-
-    /** Get all services. */
     public function services(): array
     {
         return $this->request(['action' => 'services']);
     }
 
-    /** Place a new order. */
     public function addOrder(
         int $service,
         string $link,
@@ -39,18 +33,26 @@ class SMMApi
             'link'     => $link,
             'quantity' => $quantity,
         ];
-        if ($runs !== null)     { $params['runs']     = $runs; }
-        if ($interval !== null) { $params['interval'] = $interval; }
+
+        if ($runs !== null) {
+            $params['runs'] = $runs;
+        }
+
+        if ($interval !== null) {
+            $params['interval'] = $interval;
+        }
+
         return $this->request($params);
     }
 
-    /** Get status of a single order. */
     public function orderStatus(int $order_id): array
     {
-        return $this->request(['action' => 'status', 'order' => $order_id]);
+        return $this->request([
+            'action' => 'status',
+            'order'  => $order_id,
+        ]);
     }
 
-    /** Get status of multiple orders (comma-separated IDs or array). */
     public function multiOrderStatus(array $order_ids): array
     {
         return $this->request([
@@ -59,13 +61,14 @@ class SMMApi
         ]);
     }
 
-    /** Create a refill for a single order. */
     public function refill(int $order_id): array
     {
-        return $this->request(['action' => 'refill', 'order' => $order_id]);
+        return $this->request([
+            'action' => 'refill',
+            'order'  => $order_id,
+        ]);
     }
 
-    /** Create refills for multiple orders. */
     public function multiRefill(array $order_ids): array
     {
         return $this->request([
@@ -74,13 +77,14 @@ class SMMApi
         ]);
     }
 
-    /** Get refill status for a single refill ID. */
     public function refillStatus(int $refill_id): array
     {
-        return $this->request(['action' => 'refill_status', 'refill' => $refill_id]);
+        return $this->request([
+            'action' => 'refill_status',
+            'refill' => $refill_id,
+        ]);
     }
 
-    /** Get refill status for multiple refill IDs. */
     public function multiRefillStatus(array $refill_ids): array
     {
         return $this->request([
@@ -89,7 +93,6 @@ class SMMApi
         ]);
     }
 
-    /** Cancel one or more orders. */
     public function cancel(array $order_ids): array
     {
         return $this->request([
@@ -98,20 +101,13 @@ class SMMApi
         ]);
     }
 
-    /** Get account balance. */
     public function balance(): array
     {
         return $this->request(['action' => 'balance']);
     }
 
-    // ----------------------------------------------------------------
-    // Private helpers
-    // ----------------------------------------------------------------
-
     /**
-     * Send a POST request to the API and return the decoded JSON response.
-     *
-     * @param  array<string,mixed> $params
+     * @param array<string,mixed> $params
      * @return array<mixed>
      */
     private function request(array $params): array
@@ -119,6 +115,7 @@ class SMMApi
         $params['key'] = $this->api_key;
 
         $ch = curl_init();
+
         curl_setopt_array($ch, [
             CURLOPT_URL            => $this->api_url,
             CURLOPT_POST           => true,
@@ -126,27 +123,34 @@ class SMMApi
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => 30,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_USERAGENT      => 'IyapayaoBooster/1.0',
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_USERAGENT      => 'BigSMMServer-API-Client/1.0',
         ]);
 
-        $response  = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curl_err  = curl_error($ch);
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr  = curl_error($ch);
+
         curl_close($ch);
 
-        if ($response === false || $curl_err) {
-            return ['error' => 'cURL error: ' . $curl_err];
+        if ($response === false) {
+            return ['error' => 'cURL error: ' . $curlErr];
         }
 
-        if ($http_code !== 200) {
-            return ['error' => 'HTTP error: ' . $http_code];
+        $decoded = json_decode((string) $response, true);
+
+        // Some providers return valid JSON with a non-200 status.
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
         }
 
-        $decoded = json_decode((string)$response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return ['error' => 'JSON decode error: ' . json_last_error_msg()];
+        if ($httpCode !== 200) {
+            return [
+                'error' => 'HTTP error: ' . $httpCode,
+                'body'  => (string) $response,
+            ];
         }
 
-        return is_array($decoded) ? $decoded : ['error' => 'Unexpected API response'];
+        return ['error' => 'JSON decode error: ' . json_last_error_msg()];
     }
 }
