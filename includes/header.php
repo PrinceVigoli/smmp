@@ -55,6 +55,10 @@ $base_path  = base_url();
                class="nav-link <?= ($active_nav ?? '') === 'admin_users' ? 'active' : '' ?>">
                 <span class="nav-icon">👥</span> Users
             </a>
+            <a href="<?= e(base_url('admin/fund_requests.php')) ?>"
+   class="nav-link <?= ($active_nav ?? '') === 'fund_requests' ? 'active' : '' ?>">
+    <span class="nav-icon">💳</span> Fund Requests
+</a>
             <a href="<?= e(base_url('admin/settings.php')) ?>"
                class="nav-link <?= ($active_nav ?? '') === 'admin_settings' ? 'active' : '' ?>">
                 <span class="nav-icon">🔧</span> Settings
